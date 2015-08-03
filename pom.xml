@@ -23,7 +23,7 @@
 	<groupId>org.energy-home</groupId>
 	<artifactId>jemma.osgi.ah.hac</artifactId>
 	<packaging>bundle</packaging>
-	<version>3.1.4</version>
+	<version>3.1.5</version>
 	<name>Home Automation Core Service</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -101,7 +101,7 @@
 						<Export-Package>!*</Export-Package>
 						<Service-Component>OSGI-INF/connection_admin.xml, OSGI-INF/hac.xml, OSGI-INF/haclocator.xml, OSGI-INF/hacconsole.xml, OSGI-INF/cmacommands.xml</Service-Component>
 						<Bundle-Vendor>Telecom Italia</Bundle-Vendor>
-						<Bundle-Category>Automation@Home</Bundle-Category>
+						<Bundle-Category>JEMMA Automation@Home</Bundle-Category>
 						<Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
 						<Include-Resource>{maven-resources}, xml=xml/</Include-Resource>
 						<!--<Include-Resource>OSGI-INF/*</Include-Resource>-->
@@ -109,6 +109,15 @@
 					</instructions>
 				</configuration>
 			</plugin>
+			<!-- to launch: mvn java-formatter:format -->
+			<plugin>
+				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+				<artifactId>maven-java-formatter-plugin</artifactId>
+				<version>0.4</version>
+				<configuration>
+					<configFile>${project.basedir}/src/main/resources/formatter.xml</configFile>
+				</configuration>
+			</plugin>			
 		</plugins>
 	</build>
 
