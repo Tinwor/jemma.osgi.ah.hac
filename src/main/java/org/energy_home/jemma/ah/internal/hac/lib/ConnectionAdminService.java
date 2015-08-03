@@ -81,25 +81,26 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	private final static String CONFIG_FILENAME = "cms-config.xml";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionAdminService.class);
-	
+
 	private DocumentBuilderFactory factory;
 
 	protected ArrayList positiveRules = new ArrayList();
 
 	private Timer timer = null;
 	private int saveTimeout = 1;
-	
+
 	private boolean useManagedApplianceServiceTracker = true;
 	private CAManagedApplianceServiceTracker managedApplianceServiceTracker = null;
-	
-	private boolean patched = false; // true if an upgrade from 2.2.8 to 3.0.5 (hac.lib) has been detected.
+
+	private boolean patched = false; // true if an upgrade from 2.2.8 to 3.0.5
+										// (hac.lib) has been detected.
 	private boolean enableUpdatePatch = false;
 
-//	/**
-//	 * HashMap containing hashmap; each hashmap index is the appliance pid {
-//	 * pid, { peerPid, peerAppliance } }
-//	 */
-//	private HashMap pid2PeerPidAppliances = new HashMap();
+	// /**
+	// * HashMap containing hashmap; each hashmap index is the appliance pid {
+	// * pid, { peerPid, peerAppliance } }
+	// */
+	// private HashMap pid2PeerPidAppliances = new HashMap();
 
 	/**
 	 * Dictionary that permits to retrieve the IManagedAppliance service from
@@ -107,11 +108,12 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	 */
 	private Hashtable pid2appliance = new Hashtable();
 
-//	// HashMap of an HashMap; the first hashmap index is the appliance pid; the
-//	// second hashmap index is the
-//	// peer appliance and contains the linked endpointIds
-//	// { pid, { peerAppliance, [ linkedEpsIds ] } }
-//	private HashMap pid2PeerAppliancesLinkedEndPointIds = new HashMap();
+	// // HashMap of an HashMap; the first hashmap index is the appliance pid;
+	// the
+	// // second hashmap index is the
+	// // peer appliance and contains the linked endpointIds
+	// // { pid, { peerAppliance, [ linkedEpsIds ] } }
+	// private HashMap pid2PeerAppliancesLinkedEndPointIds = new HashMap();
 
 	private ComponentContext ctxt;
 
@@ -122,11 +124,11 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		LOG.debug("activated");
 		this.ctxt = ctxt;
 		this.loadConfiguration();
-		
+
 		if (useManagedApplianceServiceTracker) {
 			this.managedApplianceServiceTracker = new CAManagedApplianceServiceTracker(this.ctxt.getBundleContext(), this);
 			this.managedApplianceServiceTracker.open();
-		}		
+		}
 	}
 
 	public synchronized void deactivate(ComponentContext ctxt) {
@@ -155,7 +157,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		this.pid2appliance.put(appliance.getPid(), appliance);
 		activateRules(appliance);
 	}
-	
+
 	protected synchronized void updatedManagedAppliance(IManagedAppliance appliance, Map props) {
 		// TODO optimize this
 		this.unsetManagedAppliance(appliance);
@@ -203,38 +205,41 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 			IManagedAppliance appliance2 = (IManagedAppliance) it.next();
 
 			if (appliance != appliance2) {
-				if (checkConnectivityOnDb(appliance.getPid(), appliance2.getPid()) ||
-						appliance2.getPid().equals(CORE_APP_PID) || appliance2.getPid().equals(CORE_APP_PID)) {
+				if (checkConnectivityOnDb(appliance.getPid(), appliance2.getPid()) || appliance2.getPid().equals(CORE_APP_PID) || appliance2.getPid().equals(CORE_APP_PID)) {
 					boolean res = activateConnection(appliance, appliance2);
 					if (res) {
 						LOG.debug(appliance.getPid() + " <--> " + appliance2.getPid());
-					}					
+					}
 				}
 			}
 		}
 
-//		// notifies the peer appliances
-//		HashMap peerAppliances = (HashMap) pid2PeerAppliancesLinkedEndPointIds.get(appliance.getPid());
-//		PeerAppliance peerAppliance = null;
-//		PeerAppliance linkedPeerAppliance = null;
-//		IManagedAppliance linkedPeerManagedAppliance = null;
-//
-//		// TODO: check if this is really necessary (changing order of
-//		// previous calls checkPendingConnecions and appliance.init seems
-//		// not working)
-//
-//		if (peerAppliances != null) {
-//			for (Iterator iterator = peerAppliances.keySet().iterator(); iterator.hasNext();) {
-//				peerAppliance = (PeerAppliance) iterator.next();
-//				linkedPeerAppliance = peerAppliance.getLinkedPeerAppliance();
-//				if (linkedPeerAppliance != null) {
-//					linkedPeerManagedAppliance = (IManagedAppliance) pid2appliance.get(linkedPeerAppliance.getPid());
-//					if (linkedPeerManagedAppliance != null)
-//						linkedPeerManagedAppliance.peerApplianceConnected(peerAppliance, (int[][]) peerAppliances
-//								.get(peerAppliance));
-//				}
-//			}
-//		}
+		// // notifies the peer appliances
+		// HashMap peerAppliances = (HashMap)
+		// pid2PeerAppliancesLinkedEndPointIds.get(appliance.getPid());
+		// PeerAppliance peerAppliance = null;
+		// PeerAppliance linkedPeerAppliance = null;
+		// IManagedAppliance linkedPeerManagedAppliance = null;
+		//
+		// // TODO: check if this is really necessary (changing order of
+		// // previous calls checkPendingConnecions and appliance.init seems
+		// // not working)
+		//
+		// if (peerAppliances != null) {
+		// for (Iterator iterator = peerAppliances.keySet().iterator();
+		// iterator.hasNext();) {
+		// peerAppliance = (PeerAppliance) iterator.next();
+		// linkedPeerAppliance = peerAppliance.getLinkedPeerAppliance();
+		// if (linkedPeerAppliance != null) {
+		// linkedPeerManagedAppliance = (IManagedAppliance)
+		// pid2appliance.get(linkedPeerAppliance.getPid());
+		// if (linkedPeerManagedAppliance != null)
+		// linkedPeerManagedAppliance.peerApplianceConnected(peerAppliance,
+		// (int[][]) peerAppliances
+		// .get(peerAppliance));
+		// }
+		// }
+		// }
 	}
 
 	public synchronized boolean deactivateBinds(String appliancePid) throws HacException {
@@ -251,7 +256,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		IManagedAppliance managedAppliance2 = (IManagedAppliance) pid2appliance.get(managedAppliancePid2);
 		return deactivateConnection(managedAppliance1, managedAppliance2);
 	}
-	
+
 	/**
 	 * Deactivate any connection belonging to IManagedAppliance passed as
 	 * parameter.
@@ -261,7 +266,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	 */
 	protected void deactivateConnections(IManagedAppliance appliance) {
 
-		String[] connectedAppliancesPids = ((Appliance)appliance).getPeerAppliancesPids();
+		String[] connectedAppliancesPids = ((Appliance) appliance).getPeerAppliancesPids();
 
 		if (connectedAppliancesPids != null) {
 			for (int i = 0; i < connectedAppliancesPids.length; i++) {
@@ -307,12 +312,12 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 			LOG.warn("Appliance connection failed because at least one managed appliance is null");
 			return false;
 		}
-		
+
 		IEndPoint[] endPoints1 = appliance1.getEndPoints();
 		IEndPoint[] endPoints2 = appliance2.getEndPoints();
-		
-		ApplianceManager manager1 = (ApplianceManager)appliance1.getApplianceManager();
-		ApplianceManager manager2 = (ApplianceManager)appliance2.getApplianceManager();
+
+		ApplianceManager manager1 = (ApplianceManager) appliance1.getApplianceManager();
+		ApplianceManager manager2 = (ApplianceManager) appliance2.getApplianceManager();
 		notifyDisconnectedPeerAppliances(manager1, endPoints1, appliance2.getPid());
 		notifyDisconnectedPeerAppliances(manager2, endPoints2, appliance1.getPid());
 		removePeerAppliances(manager1, endPoints1, appliance2.getPid());
@@ -320,25 +325,24 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		return true;
 	}
 
-	protected void notifyDisconnectedPeerAppliances (ApplianceManager applianceManager, IEndPoint[] endPoints, String appliancePid) {
+	protected void notifyDisconnectedPeerAppliances(ApplianceManager applianceManager, IEndPoint[] endPoints, String appliancePid) {
 		for (int i = 0; i < endPoints.length; i++) {
-			IAppliance peerAppliance = ((EndPoint)endPoints[i]).getPeerAppliance(appliancePid);
-			if (peerAppliance instanceof PeerAppliance && 
-					!((PeerAppliance)peerAppliance).containsOnlyCommonClientClusters()) {
-				applianceManager.peerApplianceDisconnected(((EndPoint)endPoints[i]), peerAppliance);
-				((PeerAppliance)peerAppliance).setPeerValid(false);	
+			IAppliance peerAppliance = ((EndPoint) endPoints[i]).getPeerAppliance(appliancePid);
+			if (peerAppliance instanceof PeerAppliance && !((PeerAppliance) peerAppliance).containsOnlyCommonClientClusters()) {
+				applianceManager.peerApplianceDisconnected(((EndPoint) endPoints[i]), peerAppliance);
+				((PeerAppliance) peerAppliance).setPeerValid(false);
 			}
 		}
 	}
-	
-	protected void removePeerAppliances (ApplianceManager applianceManager, IEndPoint[] endPoints, String appliancePid) {
+
+	protected void removePeerAppliances(ApplianceManager applianceManager, IEndPoint[] endPoints, String appliancePid) {
 		for (int i = 0; i < endPoints.length; i++) {
-			IAppliance peerAppliance = ((EndPoint)endPoints[i]).getPeerAppliance(appliancePid);
+			IAppliance peerAppliance = ((EndPoint) endPoints[i]).getPeerAppliance(appliancePid);
 			if (peerAppliance != null)
-				applianceManager.removePeerAppliance(((EndPoint)endPoints[i]), peerAppliance);
+				applianceManager.removePeerAppliance(((EndPoint) endPoints[i]), peerAppliance);
 		}
 	}
-	
+
 	public synchronized void deleteAllRules() {
 		// deactivate all the connections and then delete the rules
 		Collection appliances = this.pid2appliance.values();
@@ -352,10 +356,10 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	}
 
 	public synchronized String[] getPeerAppliancesPids(String appliancePid) throws HacException {
-		IManagedAppliance managedAppliance = (IManagedAppliance)pid2appliance.get(appliancePid);
+		IManagedAppliance managedAppliance = (IManagedAppliance) pid2appliance.get(appliancePid);
 		if (managedAppliance == null)
 			throw new HacException("invalid appliance pid");
-		return ((Appliance)managedAppliance).getPeerAppliancesPids();
+		return ((Appliance) managedAppliance).getPeerAppliancesPids();
 	}
 
 	public synchronized IAppliance[] getPeerAppliances(String appliancePid, int endPointId) throws HacException {
@@ -363,11 +367,10 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		if (managedAppliance == null)
 			throw new HacException("invalid appliance pid");
 
-		return ((EndPoint)(managedAppliance.getEndPoint(endPointId))).getPeerAppliances();
+		return ((EndPoint) (managedAppliance.getEndPoint(endPointId))).getPeerAppliances();
 	}
 
-	public synchronized IAppliance[] getPeerAppliances(String appliancePid, int endPointId, int propertyKey, String propertyValue)
-			throws HacException {
+	public synchronized IAppliance[] getPeerAppliances(String appliancePid, int endPointId, int propertyKey, String propertyValue) throws HacException {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("called browsePeerAppliances from " + appliancePid);
 		}
@@ -378,7 +381,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		if (managedAppliance == null)
 			throw new HacException("Auhtorization error: invalid appliance pid");
 
-		IAppliance[] peerAppliancesArray = ((EndPoint)(managedAppliance.getEndPoint(endPointId))).getPeerAppliances();
+		IAppliance[] peerAppliancesArray = ((EndPoint) (managedAppliance.getEndPoint(endPointId))).getPeerAppliances();
 
 		if (peerAppliancesArray == null || peerAppliancesArray.length == 0)
 			return null;
@@ -392,8 +395,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 			}
 			for (int i = 0; i < peerAppliancesArray.length; i++) {
 				peerAppliance = peerAppliancesArray[i];
-				if ((peerAppliance.getDescriptor().getType() != null)
-						&& (peerAppliance.getDescriptor().getType().compareTo(propertyValue) == 0)) {
+				if ((peerAppliance.getDescriptor().getType() != null) && (peerAppliance.getDescriptor().getType().compareTo(propertyValue) == 0)) {
 					resultArrayList.add(peerAppliance);
 				}
 			}
@@ -405,12 +407,11 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 
 			// TODO: add explicit properties on IAppliance to have a better
 			// performance
-			
+
 			for (int i = 0; i < peerAppliancesArray.length; i++) {
 				peerAppliance = peerAppliancesArray[i];
 				if (peerAppliance != null) {
-					String locationPid = (String) peerAppliance.getConfiguration().get(
-							IAppliance.APPLIANCE_LOCATION_PID_PROPERTY);
+					String locationPid = (String) peerAppliance.getConfiguration().get(IAppliance.APPLIANCE_LOCATION_PID_PROPERTY);
 					if (locationPid.equals(propertyValue))
 						resultArrayList.add(peerAppliance);
 				}
@@ -424,13 +425,12 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 
 			// TODO: add explicit properties on IAppliance to have a better
 			// performance
-			
+
 			for (int i = 0; i < peerAppliancesArray.length; i++) {
 				peerAppliance = peerAppliancesArray[i];
 				if (peerAppliance != null) {
 					if (peerApplianceFactory != null) {
-						String locationPid = (String) peerAppliance.getConfiguration().get(
-								IAppliance.APPLIANCE_CATEGORY_PID_PROPERTY);
+						String locationPid = (String) peerAppliance.getConfiguration().get(IAppliance.APPLIANCE_CATEGORY_PID_PROPERTY);
 
 						if (locationPid.equals(propertyValue))
 							resultArrayList.add(peerAppliance);
@@ -518,7 +518,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		IManagedAppliance managedAppliance2 = (IManagedAppliance) pid2appliance.get(managedAppliancePid2);
 		return activateConnection(managedAppliance1, managedAppliance2);
 	}
-	
+
 	/**
 	 * Activate a connection between two already running appliances
 	 * 
@@ -528,20 +528,21 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	 *            The second appliance
 	 * @return <code>true</code>, if successful.
 	 */
-	protected boolean activateConnection(IManagedAppliance managedAppliance1, IManagedAppliance managedAppliance2) {	
+	protected boolean activateConnection(IManagedAppliance managedAppliance1, IManagedAppliance managedAppliance2) {
 		if (managedAppliance1 == null || managedAppliance2 == null) {
 			LOG.warn("Appliance connection failed because at least one managed appliance is null");
 			return false;
 		}
-		
+
 		String appliance1Pid = managedAppliance1.getPid();
 		String appliance2Pid = managedAppliance2.getPid();
 		IEndPoint[] endPoints = managedAppliance1.getEndPoints();
 		if (endPoints == null || endPoints.length < 1 || endPoints == null || endPoints.length < 1) {
-			LOG.warn("Appliance connection failed because first end point list is null or has less than 2 elements: " +  managedAppliance1.getPid() + " <> " +  managedAppliance2.getPid());
+			LOG.warn("Appliance connection failed because first end point list is null or has less than 2 elements: " + managedAppliance1.getPid() + " <> "
+					+ managedAppliance2.getPid());
 			return false;
-		}		
-		
+		}
+
 		EndPoint[] endPoints1 = new EndPoint[endPoints.length];
 		for (int i = 0; i < endPoints1.length; i++) {
 			endPoints1[i] = (EndPoint) endPoints[i];
@@ -551,9 +552,10 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		}
 		endPoints = managedAppliance2.getEndPoints();
 		if (endPoints == null || endPoints.length < 1 || endPoints == null || endPoints.length < 1) {
-			LOG.warn("Appliance connection failed because first end point list is null or has less than 2 elements: " +  managedAppliance1.getPid() + " <> " +  managedAppliance2.getPid());
+			LOG.warn("Appliance connection failed because first end point list is null or has less than 2 elements: " + managedAppliance1.getPid() + " <> "
+					+ managedAppliance2.getPid());
 			return false;
-		}		
+		}
 		EndPoint[] endPoints2 = new EndPoint[endPoints.length];
 		for (int i = 0; i < endPoints2.length; i++) {
 			endPoints2[i] = (EndPoint) endPoints[i];
@@ -561,11 +563,11 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 				// already connected
 				return false;
 		}
-		ApplianceManager manager1 = (ApplianceManager)((Appliance)managedAppliance1).getApplianceManager();
-		ApplianceManager manager2 = (ApplianceManager)((Appliance)managedAppliance2).getApplianceManager();
-		
+		ApplianceManager manager1 = (ApplianceManager) ((Appliance) managedAppliance1).getApplianceManager();
+		ApplianceManager manager2 = (ApplianceManager) ((Appliance) managedAppliance2).getApplianceManager();
+
 		PeerAppliance[] peerAppliances1 = addPeerAppliances(managedAppliance1, endPoints1, managedAppliance2, endPoints2);
-		if (peerAppliances1 == null ) {
+		if (peerAppliances1 == null) {
 			removePeerAppliances(manager1, endPoints1, managedAppliance2.getPid());
 			return false;
 		}
@@ -608,15 +610,15 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 			sb.append("}\n");
 		}
 	}
-	
-	protected void notifyConnectedPeerAppliances (ApplianceManager applianceManager, EndPoint[] endPoints, PeerAppliance[] peerAppliances) {
+
+	protected void notifyConnectedPeerAppliances(ApplianceManager applianceManager, EndPoint[] endPoints, PeerAppliance[] peerAppliances) {
 		for (int i = 0; i < endPoints.length; i++) {
 			if (peerAppliances[i] != null && !peerAppliances[i].containsOnlyCommonClientClusters())
 				applianceManager.peerApplianceConnected(endPoints[i], peerAppliances[i]);
 		}
 	}
-	
-	protected PeerAppliance[] addPeerAppliances(IManagedAppliance managedAppliance1, EndPoint[] endPoints1, IManagedAppliance managedAppliance2, EndPoint[] endPoints2) {	
+
+	protected PeerAppliance[] addPeerAppliances(IManagedAppliance managedAppliance1, EndPoint[] endPoints1, IManagedAppliance managedAppliance2, EndPoint[] endPoints2) {
 		PeerAppliance peerAppliance = null;
 		PeerEndPoint peerEndPoint = null;
 		String clusterName = null;
@@ -627,7 +629,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		boolean isPeerEndPointValid = false;
 		PeerAppliance[] peerAppliances = new PeerAppliance[endPoints1.length];
 		for (int i = 0; i < endPoints1.length; i++) {
-			peerAppliance = new PeerAppliance((Appliance)managedAppliance2, endPoints1[i]);
+			peerAppliance = new PeerAppliance((Appliance) managedAppliance2, endPoints1[i]);
 			isPeerApplianceValid = false;
 			for (int j = 0; j < endPoints2.length; j++) {
 				peerEndPoint = new PeerEndPoint(endPoints2[j]);
@@ -639,20 +641,20 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 						serviceCluster = endPoints2[j].getServiceCluster(clusterName);
 						if (serviceCluster instanceof ServiceCluster)
 							peerServiceCluster = (ServiceCluster) serviceCluster;
-						else 
-							peerServiceCluster = ((PeerServiceClusterProxy)Proxy.getInvocationHandler((Proxy)serviceCluster)).getServiceCluster();
+						else
+							peerServiceCluster = ((PeerServiceClusterProxy) Proxy.getInvocationHandler((Proxy) serviceCluster)).getServiceCluster();
 						if (peerServiceCluster != null) {
 							try {
 								peerEndPoint.registerCluster(peerServiceCluster);
 								isPeerEndPointValid = true;
 							} catch (ApplianceException e) {
 								if (LOG.isErrorEnabled()) {
-									LOG.error("Exception while creating unidrectional connection: " +  managedAppliance1.getPid() + " -> " +  managedAppliance2.getPid(), e);
+									LOG.error("Exception while creating unidrectional connection: " + managedAppliance1.getPid() + " -> " + managedAppliance2.getPid(), e);
 								}
 								return null;
 							}
 						}
-					}			
+					}
 				}
 				// Create peer cluster listeners for end point 1
 				String[] clusterListenersNames = endPoints2[j].getAdditionalClusterNames();
@@ -664,9 +666,9 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 								isPeerEndPointValid = true;
 							} catch (ApplianceException e) {
 								if (LOG.isErrorEnabled()) {
-									LOG.error("Exception while creating unidrectional connection: " +  managedAppliance1.getPid() + " -> " +  managedAppliance2.getPid(), e);
+									LOG.error("Exception while creating unidrectional connection: " + managedAppliance1.getPid() + " -> " + managedAppliance2.getPid(), e);
 								}
-								return null;	
+								return null;
 							}
 					}
 				}
@@ -676,13 +678,13 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 						isPeerApplianceValid = true;
 					} catch (ApplianceException e) {
 						if (LOG.isErrorEnabled()) {
-							LOG.error("Exception while creating unidrectional connection: " +  managedAppliance1.getPid() + " -> " +  managedAppliance2.getPid(), e);
+							LOG.error("Exception while creating unidrectional connection: " + managedAppliance1.getPid() + " -> " + managedAppliance2.getPid(), e);
 						}
 						return null;
 					}
 				}
 			}
-			ApplianceManager manager1 = (ApplianceManager)((Appliance) (managedAppliance1)).getApplianceManager();
+			ApplianceManager manager1 = (ApplianceManager) ((Appliance) (managedAppliance1)).getApplianceManager();
 			if (isPeerApplianceValid) {
 				manager1.addPeerAppliance(endPoints1[i], peerAppliance);
 				peerAppliances[i] = peerAppliance;
@@ -691,7 +693,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		}
 		return peerAppliances;
 	}
-	
+
 	/**
 	 * Return an ArrayList with the name of appliance1's matching service
 	 * clusters (services exposed to appliance1)
@@ -702,24 +704,20 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 	 * @param ep2
 	 * @return
 	 */
-	protected ArrayList getMatchingClusterNames(IManagedAppliance appliance1, IEndPoint ep1, IManagedAppliance appliance2,
-			IEndPoint ep2) {
+	protected ArrayList getMatchingClusterNames(IManagedAppliance appliance1, IEndPoint ep1, IManagedAppliance appliance2, IEndPoint ep2) {
 		String[] serverMatchingClusterTypes = null;
 		String[] clientMatchingclusterTypes = null;
 		ArrayList matchingClusterNamesList = null;
 
 		// Invoke matching algorithm on appliance1 for its server side clusters
-		serverMatchingClusterTypes = ((ApplianceManager)appliance1.getApplianceManager()).getMatchingClusterTypes(ep1.getId(), IServiceCluster.SERVER_SIDE, appliance2
-				.getDescriptor(), ep2.getType(), ep2.getServiceClusterTypes(IServiceCluster.CLIENT_SIDE), ep2
-				.getAdditionalClusterTypes(IServiceCluster.CLIENT_SIDE));
+		serverMatchingClusterTypes = ((ApplianceManager) appliance1.getApplianceManager()).getMatchingClusterTypes(ep1.getId(), IServiceCluster.SERVER_SIDE,
+				appliance2.getDescriptor(), ep2.getType(), ep2.getServiceClusterTypes(IServiceCluster.CLIENT_SIDE), ep2.getAdditionalClusterTypes(IServiceCluster.CLIENT_SIDE));
 
 		// Invoke matching algorithm on appliance1 for its client side clusters
-		clientMatchingclusterTypes = ((ApplianceManager)appliance1.getApplianceManager()).getMatchingClusterTypes(ep1.getId(), IServiceCluster.CLIENT_SIDE, appliance2
-				.getDescriptor(), ep2.getType(), ep2.getServiceClusterTypes(IServiceCluster.SERVER_SIDE), ep2
-				.getAdditionalClusterTypes(IServiceCluster.SERVER_SIDE));
+		clientMatchingclusterTypes = ((ApplianceManager) appliance1.getApplianceManager()).getMatchingClusterTypes(ep1.getId(), IServiceCluster.CLIENT_SIDE,
+				appliance2.getDescriptor(), ep2.getType(), ep2.getServiceClusterTypes(IServiceCluster.SERVER_SIDE), ep2.getAdditionalClusterTypes(IServiceCluster.SERVER_SIDE));
 
-		if ((serverMatchingClusterTypes != null && serverMatchingClusterTypes.length > 0)
-				|| (clientMatchingclusterTypes != null && clientMatchingclusterTypes.length > 0)) {
+		if ((serverMatchingClusterTypes != null && serverMatchingClusterTypes.length > 0) || (clientMatchingclusterTypes != null && clientMatchingclusterTypes.length > 0)) {
 			matchingClusterNamesList = new ArrayList();
 			if (serverMatchingClusterTypes != null)
 				for (int i = 0; i < serverMatchingClusterTypes.length; i++) {
@@ -757,11 +755,11 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("try to load '" + CONFIG_FILENAME + "'");
 		}
-		
+
 		String configFilename = SCENARIOS_PATH + CONFIG_FILENAME;
 		try {
 			if (getProperty("it.telecomitalia.ah.updatepatch", enableUpdatePatch)) {
-				patched  = PatchUpdateBug.patchUpdateBugOnHacLib(this.ctxt.getBundleContext(), configFilename);
+				patched = PatchUpdateBug.patchUpdateBugOnHacLib(this.ctxt.getBundleContext(), configFilename);
 			}
 			configFile = ctxt.getBundleContext().getDataFile(configFilename);
 			if (LOG.isDebugEnabled()) {
@@ -1067,7 +1065,7 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 				continue;
 			}
 
-			String[] connectedAppliancesPids = ((Appliance)appliance1).getPeerAppliancesPids();
+			String[] connectedAppliancesPids = ((Appliance) appliance1).getPeerAppliancesPids();
 
 			if (connectedAppliancesPids != null) {
 				for (int i = 0; i < connectedAppliancesPids.length; i++) {
@@ -1098,18 +1096,17 @@ public class ConnectionAdminService implements TimerListener, IConnectionAdminSe
 		activateRules();
 		addedRuleEvent(filter);
 	}
-	
+
 	boolean getProperty(String name, boolean defaultValue) {
 		String value = System.getProperty(name);
-		
+
 		if (value != null) {
 			if (value.equals("true")) {
 				return true;
-			}
-			else if (value.equals("false")) {
+			} else if (value.equals("false")) {
 				return false;
 			}
 		}
-		return defaultValue;	
+		return defaultValue;
 	}
 }

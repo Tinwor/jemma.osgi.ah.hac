@@ -45,16 +45,13 @@ public class HacCommandProvider implements CommandProvider {
 	private HacDriverLocator hacLocator = null;
 
 	private IAppliancesProxy appliancesProxy;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(HacCommandProvider.class);
 
-	private static String invokeClusterMethod(IAppliancesProxy proxy, String appliancePid, Integer endPointId, String clusterName,
-			String methodName, String[] params) {
+	private static String invokeClusterMethod(IAppliancesProxy proxy, String appliancePid, Integer endPointId, String clusterName, String methodName, String[] params) {
 		try {
-			Object[] objectParams = TextConverter.getObjectParameters(Class.forName(clusterName), methodName, params,
-					proxy.getRequestContext(true));
-			return TextConverter.getTextRepresentation(proxy.invokeClusterMethod(appliancePid, endPointId, clusterName, methodName,
-					objectParams));
+			Object[] objectParams = TextConverter.getObjectParameters(Class.forName(clusterName), methodName, params, proxy.getRequestContext(true));
+			return TextConverter.getTextRepresentation(proxy.invokeClusterMethod(appliancePid, endPointId, clusterName, methodName, objectParams));
 		} catch (Throwable t) {
 			LOG.warn(t.getMessage());
 			return TextConverter.getTextRepresentation(new Exception(t));
@@ -374,8 +371,7 @@ public class HacCommandProvider implements CommandProvider {
 					ConfigServer configServer = (ConfigServer) commonEndPoint.getServiceCluster(ConfigServer.class.getName());
 
 					try {
-						ci.println("Appliance " + appliance.getPid() + " [\n\tname = " + configServer.getName(null)
-								+ "\n\tlocation = " + configServer.getLocationPid(null) + "\n]");
+						ci.println("Appliance " + appliance.getPid() + " [\n\tname = " + configServer.getName(null) + "\n\tlocation = " + configServer.getLocationPid(null) + "\n]");
 					} catch (Exception e) {
 					}
 				}
@@ -383,8 +379,7 @@ public class HacCommandProvider implements CommandProvider {
 				for (int i = 0; i < endPoints.length; i++) {
 					IEndPoint endPoint = endPoints[i];
 					String[] serviceClustersNames = endPoint.getServiceClusterNames();
-					ci.println("EndPoint " + endPoint.getId() + (endPoint.isAvailable() ? " (available)" : "") + " - "
-							+ " of type " + endPoint.getType() + " ");
+					ci.println("EndPoint " + endPoint.getId() + (endPoint.isAvailable() ? " (available)" : "") + " - " + " of type " + endPoint.getType() + " ");
 
 					printArray(ci, serviceClustersNames);
 				}
@@ -427,8 +422,7 @@ public class HacCommandProvider implements CommandProvider {
 		ISubscriptionParameters parameters = null;
 		if (minString != null && maxString != null && repChangeString != null)
 			parameters = new SubscriptionParameters(Long.parseLong(minString), Long.parseLong(maxString), repChange);
-		String result = TextConverter.getTextRepresentation(appliancesProxy.setAttributeSubscription(defaultAppliancePid, null,
-				clusterName, attributeName, parameters));
+		String result = TextConverter.getTextRepresentation(appliancesProxy.setAttributeSubscription(defaultAppliancePid, null, clusterName, attributeName, parameters));
 		ci.println(result);
 	}
 
@@ -441,8 +435,7 @@ public class HacCommandProvider implements CommandProvider {
 		if (attributeName == null) {
 			return;
 		}
-		String result = TextConverter.getTextRepresentation(appliancesProxy.getAttributeSubscription(defaultAppliancePid, null,
-				clusterName, attributeName));
+		String result = TextConverter.getTextRepresentation(appliancesProxy.getAttributeSubscription(defaultAppliancePid, null, clusterName, attributeName));
 		ci.println(result);
 	}
 

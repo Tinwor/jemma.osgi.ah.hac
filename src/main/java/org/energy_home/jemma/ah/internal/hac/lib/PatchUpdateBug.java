@@ -34,13 +34,12 @@ import org.slf4j.LoggerFactory;
 
 public class PatchUpdateBug {
 	private static final Logger LOG = LoggerFactory.getLogger(PatchUpdateBug.class);
-	
+
 	public static boolean patchUpdateBugOnHacLib(BundleContext bc, String configFilename) {
 		File dstFile = bc.getDataFile(configFilename);
 		if (!dstFile.exists()) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("configuration file " + configFilename + " not found in storage area of bundle "
-						+ bc.getBundle().getBundleId());
+				LOG.debug("configuration file " + configFilename + " not found in storage area of bundle " + bc.getBundle().getBundleId());
 			}
 			Bundle[] bundles = bc.getBundles();
 			for (int i = 0; i < bundles.length; i++) {
@@ -54,24 +53,24 @@ public class PatchUpdateBug {
 						// The bundle is has not been started, yet!!!
 						return false;
 					}
-					//if (version.compareTo(new Version("3.0.0")) <= 0) {
-						File srcFile = hacBundleContext.getDataFile(configFilename);
-						if (srcFile.exists()) {
-							// copy the xml file into the current bundle storage
-							// area
-							if (copyfile(srcFile, dstFile)) {
-								// copied successfully: delete the old file
-								srcFile.delete();
-								return true;
-							}
+					// if (version.compareTo(new Version("3.0.0")) <= 0) {
+					File srcFile = hacBundleContext.getDataFile(configFilename);
+					if (srcFile.exists()) {
+						// copy the xml file into the current bundle storage
+						// area
+						if (copyfile(srcFile, dstFile)) {
+							// copied successfully: delete the old file
+							srcFile.delete();
+							return true;
 						}
-					//}
+					}
+					// }
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	public static boolean moveFactoryConfigurations(ConfigurationAdmin cm, String factoryPid) {
 		Configuration[] configurations;
 		try {
