@@ -1,15 +1,15 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1438598094714
-Build-Jdk: 1.8.0_45
+Bnd-LastModified: 1438700125860
+Build-Jdk: 1.8.0_51
 Built-By: tomasi
 Bundle-Activator: org.energy_home.jemma.ah.internal.hac.Activator
-Bundle-Category: Automation@Home
+Bundle-Category: JEMMA Automation@Home
 Bundle-ManifestVersion: 2
 Bundle-Name: Home Automation Core Service
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-SymbolicName: jemma.osgi.ah.hac;singleton:=true
 Bundle-Vendor: Telecom Italia
-Bundle-Version: 3.1.4
+Bundle-Version: 3.1.5
 Created-By: Apache Maven Bundle Plugin
 Import-Package: org.energy_home.jemma.ah.cluster.ah;version="3.0.1",org.
  slf4j;version="[1.6,2)",org.energy_home.jemma.ah.hac;version="3.0.2",or
@@ -24,33 +24,6 @@ Import-Package: org.energy_home.jemma.ah.cluster.ah;version="3.0.1",org.
  gi.util.tracker;version="[1.5,2)",org.w3c.dom,org.xml.sax,javax.xml.par
  sers,org.apache.commons.codec;version="1.3.0",org.osgi.service.event;ve
  rsion="[1.2,2)",org.osgi.service.useradmin;version="[1.1,2)"
-Provide-Capability: osgi.service;effective:=active;objectClass="org.ener
- gy_home.jemma.ah.hac.lib.ext.IConnectionAdminService",osgi.service;effe
- ctive:=active;objectClass="org.energy_home.jemma.ah.hac.lib.ext.IHacSer
- vice",osgi.service;effective:=active;objectClass="org.osgi.service.devi
- ce.DriverLocator",osgi.service;effective:=active;objectClass="org.eclip
- se.osgi.framework.console.CommandProvider";osgi.command.scope=cma;osgi.
- command.description="Home Automation Core Commands",osgi.service;effect
- ive:=active;objectClass="org.eclipse.osgi.framework.console.CommandProv
- ider";osgi.command.scope=hac
-Require-Capability: osgi.service;effective:=active;resolution:=optional;
- filter:="(objectClass=org.energy_home.jemma.ah.hac.lib.ext.INetworkMana
- ger)",osgi.service;effective:=active;filter:="(objectClass=org.osgi.ser
- vice.cm.ConfigurationAdmin)",osgi.service;effective:=active;filter:="(o
- bjectClass=javax.xml.parsers.DocumentBuilderFactory)",osgi.service;effe
- ctive:=active;resolution:=optional;filter:="(objectClass=org.energy_hom
- e.jemma.ah.hac.lib.ext.IHacService)",osgi.service;effective:=active;res
- olution:=optional;filter:="(objectClass=org.energy_home.jemma.ah.hac.li
- b.ext.IConnectionAdminService)",osgi.service;effective:=active;filter:=
- "(objectClass=org.eclipse.equinox.internal.util.timer.Timer)",osgi.serv
- ice;effective:=active;resolution:=optional;filter:="(objectClass=org.en
- ergy_home.jemma.ah.hac.lib.ext.IAppliancesProxy)",osgi.service;effectiv
- e:=active;resolution:=optional;filter:="(objectClass=org.energy_home.je
- mma.ah.hac.IApplianceFactory)",osgi.service;effective:=active;resolutio
- n:=optional;filter:="(objectClass=org.apache.felix.bundlerepository.Rep
- ositoryAdmin)",osgi.service;effective:=active;resolution:=optional;filt
- er:="(objectClass=org.osgi.service.device.DriverLocator)",osgi.ee;filte
- r:="(&(osgi.ee=JavaSE)(version=1.5))"
-Service-Component: OSGI-INF/connection_admin.xml,OSGI-INF/hac.xml,OSGI-I
- NF/haclocator.xml,OSGI-INF/hacconsole.xml,OSGI-INF/cmacommands.xml
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.5))"
+Service-Component: OSGI-INF/*.xml
 Tool: Bnd-2.3.0.201405100607

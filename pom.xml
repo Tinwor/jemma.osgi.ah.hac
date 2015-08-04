@@ -99,7 +99,7 @@
 						</Import-Package>
 						<!--<Import-Package>!com.sun.*,*</Import-Package>-->
 						<Export-Package>!*</Export-Package>
-						<Service-Component>OSGI-INF/connection_admin.xml, OSGI-INF/hac.xml, OSGI-INF/haclocator.xml, OSGI-INF/hacconsole.xml, OSGI-INF/cmacommands.xml</Service-Component>
+						<Service-Component>OSGI-INF/*.xml</Service-Component>
 						<Bundle-Vendor>Telecom Italia</Bundle-Vendor>
 						<Bundle-Category>JEMMA Automation@Home</Bundle-Category>
 						<Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
